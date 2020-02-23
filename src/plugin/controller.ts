@@ -1,9 +1,19 @@
 import tinycolor from 'tinycolor2'
 
+// Default to have hex
+let hexPref = 'on'
 const rgbPref = figma.root.getPluginData('rgb');
-const hexPref = figma.root.getPluginData('hex');
 const hsvPref = figma.root.getPluginData('hsv');
 const hslPref = figma.root.getPluginData('hsl');
+
+// Only set hex accurately if at least one other preference is set
+if (
+    rgbPref === 'on' ||
+    hsvPref === 'on' ||
+    hslPref === 'on'
+) {
+    hexPref = figma.root.getPluginData('hex')
+}
 
 // Preferences only
 if (figma.command === 'set-preferences') {
@@ -75,10 +85,10 @@ if (figma.command === 'set-preferences') {
                 case 'copy': {
                     let str = ''
                     if (
-                        rgbPref === 'off' &&
-                        hexPref === 'off' &&
-                        hsvPref === 'off' &&
-                        hslPref === 'off'
+                        (!rgbPref || rgbPref === 'off') &&
+                        (!hexPref || hexPref === 'off') &&
+                        (!hsvPref || hsvPref === 'off') &&
+                        (!hslPref || hslPref === 'off')
                     ) {
                         figma.notify('Please choose a format from Preferences')
                     } else {
