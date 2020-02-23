@@ -1,0 +1,33 @@
+{
+  "name": "Color Copier",
+  "id": "00000000",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "menu": [
+    {
+      "name": "Copy as RGB",
+      "command": "copy-as-rgb"
+    },
+    {
+      "name": "Copy as HEX",
+      "command": "copy-as-hex"
+    },
+    {
+      "name": "Copy as HSV",
+      "command": "copy-as-hsv"
+    },
+    {
+      "name": "Copy as HSL",
+      "command": "copy-as-hsl"
+    },
+    {
+      "name": "Copy Name",
+      "command": "copy-as-name"
+    },
+    {
+      "name": "Copy as Filter",
+      "command": "copy-as-filter"
+    }
+  ]
+}
