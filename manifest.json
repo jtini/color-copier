@@ -6,6 +6,10 @@
   "ui": "dist/ui.html",
   "menu": [
     {
+      "name": "Color copy",
+      "command": "copy"
+    },
+    {
       "name": "Copy as RGB",
       "command": "copy-as-rgb"
     },
@@ -23,6 +27,10 @@
     },
     {
       "separator": true
+    },
+    {
+      "name": "Format Preferences",
+      "command": "set-preferences"
     },
     {
       "name": "Copy Multiple Formats",
