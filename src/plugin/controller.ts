@@ -1,5 +1,10 @@
 import tinycolor from 'tinycolor2'
 
+const rgbPref = figma.root.getPluginData('rgb');
+const hexPref = figma.root.getPluginData('hex');
+const hsvPref = figma.root.getPluginData('hsv');
+const hslPref = figma.root.getPluginData('hsl');
+
 const currentSelection = figma.currentPage.selection;
 
 if (currentSelection.length === 0) {
@@ -49,6 +54,36 @@ if (
         }
 
         switch (figma.command) {
+            case 'copy-multiple':
+                const rgbColor = baseColor.toRgbString();
+                const hexColor = baseColor.toHexString();
+                const hsvColor = baseColor.toHsvString();
+                const hslColor = baseColor.toHslString();
+                const filterColor = baseColor.toFilter()
+                figma.showUI(__html__, {
+                    width: 300,
+                    height: 250
+                })
+
+                figma.ui.postMessage({
+                    type: 'format-color',
+                    message: {
+                        formats: {
+                            rgbColor,
+                            hexColor,
+                            hsvColor,
+                            hslColor,
+                            filterColor
+                        },
+                        preferences: {
+                            rgb: rgbPref,
+                            hex: hexPref,
+                            hsv: hsvPref,
+                            hsl: hslPref
+                        }
+                    }
+                })
+                break;
             case 'copy-as-rgb':
                 returnColor = baseColor.toRgbString()
                 figma.showUI(__html__, { width: 1, height: 1 });
@@ -59,6 +94,7 @@ if (
                         color: returnColor
                     }
                 })
+                figma.notify('Copied to clipboard')
                 break;
             case 'copy-as-hex':
                 returnColor = baseColor.toHexString()
@@ -70,6 +106,7 @@ if (
                         color: returnColor
                     }
                 })
+                figma.notify('Copied to clipboard')
                 break;
             case 'copy-as-hsl':
                 returnColor = baseColor.toHslString()
@@ -81,6 +118,7 @@ if (
                         color: returnColor
                     }
                 })
+                figma.notify('Copied to clipboard')
                 break;
             case 'copy-as-hsv':
                 returnColor = baseColor.toHsvString()
@@ -92,6 +130,7 @@ if (
                         color: returnColor
                     }
                 })
+                figma.notify('Copied to clipboard')
                 break;
             case 'copy-as-filter':
                 returnColor = baseColor.toFilter()
@@ -103,6 +142,7 @@ if (
                         color: returnColor
                     }
                 })
+                figma.notify('Copied to clipboard')
                 break;
             default:
                 figma.notify(`No command matched: ${figma.command}`)
@@ -120,6 +160,19 @@ if (
 
 figma.ui.onmessage = (msg) => {
     if (msg.type === 'close-plugin') {
+        if (msg.data && msg.data.rgb) {
+            figma.root.setPluginData('rgb', msg.data.rgb)
+        }
+        if (msg.data && msg.data.hex) {
+            figma.root.setPluginData('hex', msg.data.hex)
+        }
+        if (msg.data && msg.data.hsv) {
+            figma.root.setPluginData('hsv', msg.data.hsv)
+        }
+        if (msg.data && msg.data.hsl) {
+            figma.root.setPluginData('hsl', msg.data.hsl)
+        }
+
         figma.ui.hide();
         figma.closePlugin();
     }

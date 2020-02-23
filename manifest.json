@@ -22,12 +22,11 @@
       "command": "copy-as-hsl"
     },
     {
-      "name": "Copy Name",
-      "command": "copy-as-name"
+      "separator": true
     },
     {
-      "name": "Copy as Filter",
-      "command": "copy-as-filter"
+      "name": "Copy Multiple Formats",
+      "command": "copy-multiple"
     }
   ]
 }
