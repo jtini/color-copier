@@ -58,7 +58,6 @@ if (figma.command === 'set-preferences') {
         if (paints !== figma.mixed && paints.length === 1) {
             const fill = paints[0];
             let baseColor = tinycolor('#000')
-            let returnColor = '#000'
             if (fill.type !== "SOLID") {
                 figma.notify(`Please select a ${layer.type === 'FRAME' ? 'frame' : 'layer'} with a color ${layer.type === 'FRAME' ? 'background' : 'fill'}.`)
                 figma.closePlugin();
@@ -73,99 +72,46 @@ if (figma.command === 'set-preferences') {
             }
 
             switch (figma.command) {
-                case 'copy':
-                    // Pull in preferences
-                    // Use them to copy the color
-                    // The end!
-                    break;
-                case 'copy-multiple':
-                    const rgbColor = baseColor.toRgbString();
-                    const hexColor = baseColor.toHexString();
-                    const hsvColor = baseColor.toHsvString();
-                    const hslColor = baseColor.toHslString();
-                    figma.showUI(__html__, {
-                        width: 300,
-                        height: 250
-                    })
-
-                    figma.ui.postMessage({
-                        type: 'format-color',
-                        message: {
-                            formats: {
-                                rgbColor,
-                                hexColor,
-                                hsvColor,
-                                hslColor,
-                            },
-                            preferences: {
-                                rgb: rgbPref,
-                                hex: hexPref,
-                                hsv: hsvPref,
-                                hsl: hslPref
-                            }
+                case 'copy': {
+                    let str = ''
+                    if (
+                        rgbPref === 'off' &&
+                        hexPref === 'off' &&
+                        hsvPref === 'off' &&
+                        hslPref === 'off'
+                    ) {
+                        figma.notify('Please choose a format from Preferences')
+                    } else {
+                        if (rgbPref === 'on') {
+                            str += baseColor.toRgbString();
                         }
-                    })
-                    break;
-                case 'copy-as-rgb':
-                    returnColor = baseColor.toRgbString()
-                    figma.showUI(__html__, { width: 1, height: 1 });
+                        if (hexPref === 'on') {
+                            str += rgbPref === 'on' ?
+                                '\n' + baseColor.toHexString() :
+                                baseColor.toHexString()
+                        }
+                        if (hsvPref === 'on') {
+                            str += (hexPref === 'on' || rgbPref === 'on') ?
+                                '\n' + baseColor.toHsvString() :
+                                baseColor.toHsvString()
+                        }
+                        if (hslPref === 'on') {
+                            str += (hsvPref === 'on' || hexPref === 'on' || rgbPref === 'on') ?
+                                '\n' + baseColor.toHslString() :
+                                baseColor.toHslString()
+                        }
+                    }
 
+                    figma.showUI(__html__, { width: 1, height: 1 });
                     figma.ui.postMessage({
                         type: 'copy-color',
                         message: {
-                            color: returnColor
+                            str
                         }
                     })
                     figma.notify('Copied to clipboard')
                     break;
-                case 'copy-as-hex':
-                    returnColor = baseColor.toHexString()
-                    figma.showUI(__html__, { width: 1, height: 1 });
-
-                    figma.ui.postMessage({
-                        type: 'copy-color',
-                        message: {
-                            color: returnColor
-                        }
-                    })
-                    figma.notify('Copied to clipboard')
-                    break;
-                case 'copy-as-hsl':
-                    returnColor = baseColor.toHslString()
-                    figma.showUI(__html__, { width: 1, height: 1 });
-
-                    figma.ui.postMessage({
-                        type: 'copy-color',
-                        message: {
-                            color: returnColor
-                        }
-                    })
-                    figma.notify('Copied to clipboard')
-                    break;
-                case 'copy-as-hsv':
-                    returnColor = baseColor.toHsvString()
-                    figma.showUI(__html__, { width: 1, height: 1 });
-
-                    figma.ui.postMessage({
-                        type: 'copy-color',
-                        message: {
-                            color: returnColor
-                        }
-                    })
-                    figma.notify('Copied to clipboard')
-                    break;
-                case 'copy-as-filter':
-                    returnColor = baseColor.toFilter()
-                    figma.showUI(__html__, { width: 1, height: 1 });
-
-                    figma.ui.postMessage({
-                        type: 'copy-color',
-                        message: {
-                            color: returnColor
-                        }
-                    })
-                    figma.notify('Copied to clipboard')
-                    break;
+                }
                 default:
                     figma.notify(`No command matched: ${figma.command}`)
                     figma.closePlugin()
@@ -183,24 +129,35 @@ if (figma.command === 'set-preferences') {
 
 figma.ui.onmessage = (msg) => {
     if (msg.type === 'set-preferences') {
-        // Update the preferences
-        // Close the plugin?
+        if (
+            msg.data.rgb === 'off' &&
+            msg.data.hex === 'off' &&
+            msg.data.hsv === 'off' &&
+            msg.data.hsl === 'off'
+        ) {
+            figma.notify('Please select at least one format')
+        } else {
+            if (msg.data && msg.data.rgb) {
+                figma.root.setPluginData('rgb', msg.data.rgb)
+            }
+            if (msg.data && msg.data.hex) {
+                figma.root.setPluginData('hex', msg.data.hex)
+            }
+            if (msg.data && msg.data.hsv) {
+                figma.root.setPluginData('hsv', msg.data.hsv)
+            }
+            if (msg.data && msg.data.hsl) {
+                figma.root.setPluginData('hsl', msg.data.hsl)
+            }
+
+            figma.notify('Preferences updated')
+
+            figma.ui.hide();
+            figma.closePlugin();
+        }
     }
 
     if (msg.type === 'close-plugin') {
-        if (msg.data && msg.data.rgb) {
-            figma.root.setPluginData('rgb', msg.data.rgb)
-        }
-        if (msg.data && msg.data.hex) {
-            figma.root.setPluginData('hex', msg.data.hex)
-        }
-        if (msg.data && msg.data.hsv) {
-            figma.root.setPluginData('hsv', msg.data.hsv)
-        }
-        if (msg.data && msg.data.hsl) {
-            figma.root.setPluginData('hsl', msg.data.hsl)
-        }
-
         figma.ui.hide();
         figma.closePlugin();
     }

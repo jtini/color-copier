@@ -6,35 +6,15 @@
   "ui": "dist/ui.html",
   "menu": [
     {
-      "name": "Color copy",
+      "name": "Copy Color",
       "command": "copy"
-    },
-    {
-      "name": "Copy as RGB",
-      "command": "copy-as-rgb"
-    },
-    {
-      "name": "Copy as HEX",
-      "command": "copy-as-hex"
-    },
-    {
-      "name": "Copy as HSV",
-      "command": "copy-as-hsv"
-    },
-    {
-      "name": "Copy as HSL",
-      "command": "copy-as-hsl"
     },
     {
       "separator": true
     },
     {
-      "name": "Format Preferences",
+      "name": "Preferences",
       "command": "set-preferences"
-    },
-    {
-      "name": "Copy Multiple Formats",
-      "command": "copy-multiple"
     }
   ]
 }

@@ -7,10 +7,10 @@ const App = ({ }) => {
         rgbColor: '',
         hexColor: '',
         hsvColor: '',
-        hslColor: '',
-        filterColor: ''
+        hslColor: ''
     })
     const [defaultsChecked, setDefaultsChecked] = React.useState([])
+    const [formatPrefs, setFormatPrefs] = React.useState(null)
 
     const handleSubmit = React.useCallback((e, { formats }) => {
         e.preventDefault()
@@ -41,7 +41,7 @@ const App = ({ }) => {
         parent.postMessage(
             {
                 pluginMessage: {
-                    type: 'close-plugin',
+                    type: 'set-preferences',
                     data: {
                         rgb: rgb || 'off',
                         hex: hex || 'off',
@@ -58,9 +58,14 @@ const App = ({ }) => {
         // This is how we read messages sent from the plugin controller
         window.onmessage = (event) => {
             const { type, message } = event.data.pluginMessage;
+
+            if (type === 'set-preferences') {
+                setFormatPrefs(message.preferences)
+            }
+
             if (type === 'copy-color') {
                 const el = document.createElement('textarea');
-                el.value = message.color;
+                el.value = message.str;
                 document.body.appendChild(el);
                 el.select();
                 document.execCommand('copy');
@@ -91,23 +96,23 @@ const App = ({ }) => {
             <h2 className="section-title">Which formats would you like to copy?</h2>
             <form onSubmit={e => handleSubmit(e, { formats })} id="formatsForm">
                 <div className="checkbox">
-                    <input className="checkbox__box" type="checkbox" name="rgb" id="rgb" defaultChecked={defaultsChecked[0]} />
+                    <input className="checkbox__box" type="checkbox" name="rgb" id="rgb" defaultChecked={formatPrefs && formatPrefs.rgb === 'on'} />
                     <label className="checkbox__label" htmlFor="rgb">RGB{`${formats.rgbColor ? `: ${formats.rgbColor}` : ''}`}</label>
                 </div>
                 <div className="checkbox">
-                    <input className="checkbox__box" type="checkbox" name="hex" id="hex" defaultChecked={defaultsChecked[1]} />
+                    <input className="checkbox__box" type="checkbox" name="hex" id="hex" defaultChecked={formatPrefs && formatPrefs.hex === 'on'} />
                     <label className="checkbox__label" htmlFor="hex">HEX{`${formats.hexColor ? `: ${formats.hexColor}` : ''}`}</label>
                 </div>
                 <div className="checkbox">
-                    <input className="checkbox__box" type="checkbox" name="hsv" id="hsv" defaultChecked={defaultsChecked[2]} />
+                    <input className="checkbox__box" type="checkbox" name="hsv" id="hsv" defaultChecked={formatPrefs && formatPrefs.hsv === 'on'} />
                     <label className="checkbox__label" htmlFor="hsv">HSV{`${formats.hsvColor ? `: ${formats.hsvColor}` : ''}`}</label>
                 </div>
                 <div className="checkbox">
-                    <input className="checkbox__box" type="checkbox" name="hsl" id="hsl" defaultChecked={defaultsChecked[3]} />
+                    <input className="checkbox__box" type="checkbox" name="hsl" id="hsl" defaultChecked={formatPrefs && formatPrefs.hsl === 'on'} />
                     <label className="checkbox__label" htmlFor="hsl">HSL{`${formats.hslColor ? `: ${formats.hslColor}` : ''}`}</label>
                 </div>
                 <div className="divider" />
-                <button className="button button--primary" type="submit">Copy Formats</button>
+                <button className="button button--primary" type="submit">Save Preferences</button>
             </form>
         </div>
     )
