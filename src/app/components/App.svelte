@@ -64,7 +64,7 @@
     };
 </script>
 
-<h2 className="section-title">Which formats would you like to copy?</h2>
+<h2 class="section-title">Which formats would you like to copy?</h2>
 
 <div class="checkbox">
     <input class="checkbox__box" type="checkbox" id="rgb" bind:checked={rgb} />
