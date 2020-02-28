@@ -9,12 +9,14 @@ module.exports = (env, argv) => ({
   devtool: argv.mode === 'production' ? false : 'inline-source-map',
 
   entry: {
-    ui: './src/app/index.tsx', // The entry point for your UI code
+    ui: './src/app/main.js', // The entry point for your UI code
     code: './src/plugin/controller.ts', // The entry point for your plugin code
   },
 
   module: {
     rules: [
+      // Convert .svelte files
+      { test: /\.svelte$/, use: { loader: 'svelte-loader', options: { emitCss: true, hotReload: true } } },
       // Converts TypeScript code to JavaScript
       { test: /\.tsx?$/, use: 'ts-loader', exclude: /node_modules/ },
 
@@ -27,7 +29,13 @@ module.exports = (env, argv) => ({
   },
 
   // Webpack tries these extensions for you if you omit the extension like "import './file'"
-  resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js'] },
+  resolve: {
+    alias: {
+      svelte: path.resolve('node_modules', 'svelte')
+    },
+    extensions: ['.tsx', '.ts', '.jsx', '.js', '.svelte'],
+    mainFields: ['svelte', 'browser', 'module', 'main']
+  },
 
   output: {
     filename: '[name].js',
